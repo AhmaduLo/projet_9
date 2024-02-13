@@ -14,7 +14,7 @@ export const filteredBills = (data, status) => {
         if (typeof jest !== "undefined") {
           selectCondition = bill.status === status;
         } else {
-        /* istanbul ignore next */
+          /* istanbul ignore next */
           // in prod environment
           const userEmail = JSON.parse(localStorage.getItem("user")).email;
           selectCondition =
@@ -94,6 +94,22 @@ export default class {
       $("#modaleFileAdmin1").modal("show");
   };
 
+  //--------icone downlaod justificatif-------------
+  handleClickIconDown = () => {
+    const billUrl = $("#icon-eye-d").attr("data-bill-url");
+    const imgWidth = Math.floor($("#modaleFileAdmin1").width() * 0.3);
+
+    // Création d'une instance jsPDF
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+
+    // Ajout de l'image de la facture au PDF
+    pdf.addImage(billUrl, "JPEG", 0, 0, imgWidth, imgWidth);
+
+    // Sauvegarde du PDF
+    pdf.save("Facture.pdf");
+  };
+
   handleEditTicket(e, bill, bills) {
     if (this.counter === undefined || this.id !== bill.id) this.counter = 0;
     if (this.id === undefined || this.id !== bill.id) this.id = bill.id;
@@ -115,6 +131,8 @@ export default class {
       this.counter++;
     }
     $("#icon-eye-d").click(this.handleClickIconEye);
+    //---add icone downlaod--
+    $("#icon-down").click(this.handleClickIconDown);
     $("#btn-accept-bill").click((e) => this.handleAcceptSubmit(e, bill));
     $("#btn-refuse-bill").click((e) => this.handleRefuseSubmit(e, bill));
   }
