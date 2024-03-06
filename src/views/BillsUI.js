@@ -4,11 +4,13 @@ import LoadingPage from "./LoadingPage.js";
 import Actions from "./Actions.js";
 
 const row = (bill) => {
+  //console.log(bill.date);
+
   return `
     <tr>
       <td>${bill.type}</td>
       <td>${bill.name}</td>
-      <td>${bill.date}</td>
+      <td data-date="${bill.date}">${bill.date}</td>
       <td>${bill.amount} €</td>
       <td>${bill.status}</td>
       <td>
@@ -19,8 +21,44 @@ const row = (bill) => {
 };
 
 const rows = (data) => {
+  // Fonction pour convertir la date au format JJ/MM/AAAA en objet Date JavaScript
+  function parseDate(dateString) {
+    const parts = dateString.split(" ");
+    const day = parseInt(parts[0]);
+    const monthName = parts[1];
+    const year = parseInt(parts[2]);
+
+    // Définition des mois
+    const months = [
+      "Jan.",
+      "Fév.",
+      "Mar.",
+      "Avr.",
+      "Mai.",
+      "Juin.",
+      "Juil.",
+      "Août",
+      "Sept.",
+      "Oct.",
+      "Nov.",
+      "Déc.",
+    ];
+    const month = months.findIndex((month) => month === monthName);
+    return new Date(year, month, day);
+  }
+  // Tri des données par date du plus récent au moins récent
+  data.sort((a, b) => {
+    const dateA = parseDate(a.date);
+    const dateB = parseDate(b.date);
+    return dateB - dateA;
+  });
+  // Afficher les données triées
+  // data.forEach((item) => {
+  //   console.log(item.category, item.city, item.date, item.amount, item.status);
+  // });
   return data && data.length ? data.map((bill) => row(bill)).join("") : "";
 };
+//console.log(rows);
 
 export default ({ data: bills, loading, error }) => {
   const modal = () => `
@@ -40,7 +78,7 @@ export default ({ data: bills, loading, error }) => {
     </div>
   `;
 
-  if (loading) {  
+  if (loading) {
     return LoadingPage();
   } else if (error) {
     return ErrorPage(error);
@@ -67,7 +105,7 @@ export default ({ data: bills, loading, error }) => {
               </tr>
           </thead>
           <tbody data-testid="tbody">
-            ${rows(bills)}
+          ${rows(bills)}
           </tbody>
           </table>
         </div>
