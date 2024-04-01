@@ -20,43 +20,66 @@ const row = (bill) => {
     `;
 };
 
-const rows = (data) => {
-  // Fonction pour convertir la date au format JJ/MM/AAAA en objet Date JavaScript
-  function parseDate(dateString) {
-    const parts = dateString.split(" ");
-    const day = parseInt(parts[0]);
-    const monthName = parts[1];
-    const year = parseInt(parts[2]);
+// const rows = (data) => {
+//   // Fonction pour convertir la date au format JJ/MM/AAAA en objet Date JavaScript
+//   function parseDate(dateString) {
+//     const parts = dateString.split(" ");
+//     const day = parseInt(parts[0]);
+//     const monthName = parts[1];
+//     const year = parseInt(parts[2]);
 
-    // Définition des mois
-    const months = [
-      "Jan.",
-      "Fév.",
-      "Mar.",
-      "Avr.",
-      "Mai.",
-      "Juin.",
-      "Juil.",
-      "Août",
-      "Sept.",
-      "Oct.",
-      "Nov.",
-      "Déc.",
-    ];
-    const month = months.findIndex((month) => month === monthName);
-    return new Date(year, month, day);
+//     // Définition des mois
+//     const months = [
+//       "Jan.",
+//       "Fév.",
+//       "Mar.",
+//       "Avr.",
+//       "Mai.",
+//       "Juin.",
+//       "Juil.",
+//       "Août",
+//       "Sept.",
+//       "Oct.",
+//       "Nov.",
+//       "Déc.",
+//     ];
+//     const month = months.findIndex((month) => month === monthName);
+//     return new Date(year, month, day);
+//   }
+//   // Tri des données par date du plus récent au moins récent
+//   data.sort((a, b) => {
+//     const dateA = parseDate(a.date);
+//     const dateB = parseDate(b.date);
+//     return dateB - dateA;
+//   });
+//   // Afficher les données triées
+//   // data.forEach((item) => {
+//   //   console.log(item.category, item.city, item.date, item.amount, item.status);
+//   // });
+//   return data && data.length ? data.map((bill) => row(bill)).join("") : "";
+// };
+
+const rows = (data) => {
+  // Vérifier si 'data' est un tableau et qu'il n'est pas vide avant de continuer
+  if (!Array.isArray(data) || !data.length) {
+    // Retourner une valeur appropriée si 'data' n'est pas un tableau ou est vide
+    return "";
   }
-  // Tri des données par date du plus récent au moins récent
+
+  // Fonction pour convertir la date du format AAAA/MM/JJ en objet Date JavaScript
+  function parseDate(dateString) {
+    return new Date(dateString);
+  }
+
+  // Tri des données par date du plus tôt au plus tard
   data.sort((a, b) => {
-    const dateA = parseDate(a.date);
-    const dateB = parseDate(b.date);
-    return dateB - dateA;
+    const dateA = parseDate(a.date); // Convertir la chaîne de caractères en date pour A
+    const dateB = parseDate(b.date); // Convertir la chaîne de caractères en date pour B
+    return dateA - dateB; // Comparer les dates pour le tri, du plus tôt au plus tard
   });
-  // Afficher les données triées
-  // data.forEach((item) => {
-  //   console.log(item.category, item.city, item.date, item.amount, item.status);
-  // });
-  return data && data.length ? data.map((bill) => row(bill)).join("") : "";
+
+  // Afficher/formater les données triées
+  return data.map((bill) => row(bill)).join("");
 };
 //console.log(rows);
 

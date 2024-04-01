@@ -227,4 +227,45 @@ describe("Given that I am a user on login page", () => {
       expect(screen.queryByText("Validations")).toBeTruthy();
     });
   });
+  describe("Given that I am a user on login page", () => {
+    describe("When I am on Login Page", () => {
+      test("Then bill icon in vertical layout should be highlighted", () => {
+        document.body.innerHTML = LoginUI();
+
+        // Simuler la connexion de l'utilisateur en tant qu'employé
+        window.localStorage.setItem(
+          "user",
+          JSON.stringify({
+            type: "Employee",
+          }) 
+        );
+
+        // Créer un élément racine pour le rendu de l'application
+        const root = document.createElement("div");
+        root.setAttribute("id", "root");
+        document.body.append(root);
+
+        // Simuler la navigation vers la page de connexion
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname });
+        };
+
+        // Créer une instance de la classe Login
+        const login = new Login({
+          document,
+          localStorage: window.localStorage,
+          onNavigate,
+          PREVIOUS_LOCATION: "",
+          store: {},
+        });
+
+        // Vérifier que l'icône de facturation est mise en surbrillance
+        login.handleSubmitEmployee(); // Appel de la méthode pour simuler la soumission du formulaire d'employé
+
+        // Attendre que l'icône de facturation soit mise en surbrillance
+        const highlightedIcon = document.querySelector(".highlighted-icon");
+        expect(highlightedIcon).toBeTruthy();
+      });
+    });
+  });
 });

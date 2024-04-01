@@ -72,6 +72,8 @@ export default class NewBill {
     console.log(bill);
     this.updateBill(bill);
     this.onNavigate(ROUTES_PATH["NewBill"]);
+
+    console.log('cva');
     
   };
 
