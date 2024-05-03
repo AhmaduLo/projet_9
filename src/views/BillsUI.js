@@ -4,13 +4,11 @@ import LoadingPage from "./LoadingPage.js";
 import Actions from "./Actions.js";
 
 const row = (bill) => {
-  //console.log(bill.date);
-
   return `
     <tr>
       <td>${bill.type}</td>
       <td>${bill.name}</td>
-      <td data-date="${bill.date}">${bill.date}</td>
+      <td>${bill.date}</td>
       <td>${bill.amount} €</td>
       <td>${bill.status}</td>
       <td>
@@ -19,45 +17,6 @@ const row = (bill) => {
     </tr>
     `;
 };
-
-// const rows = (data) => {
-//   // Fonction pour convertir la date au format JJ/MM/AAAA en objet Date JavaScript
-//   function parseDate(dateString) {
-//     const parts = dateString.split(" ");
-//     const day = parseInt(parts[0]);
-//     const monthName = parts[1];
-//     const year = parseInt(parts[2]);
-
-//     // Définition des mois
-//     const months = [
-//       "Jan.",
-//       "Fév.",
-//       "Mar.",
-//       "Avr.",
-//       "Mai.",
-//       "Juin.",
-//       "Juil.",
-//       "Août",
-//       "Sept.",
-//       "Oct.",
-//       "Nov.",
-//       "Déc.",
-//     ];
-//     const month = months.findIndex((month) => month === monthName);
-//     return new Date(year, month, day);
-//   }
-//   // Tri des données par date du plus récent au moins récent
-//   data.sort((a, b) => {
-//     const dateA = parseDate(a.date);
-//     const dateB = parseDate(b.date);
-//     return dateB - dateA;
-//   });
-//   // Afficher les données triées
-//   // data.forEach((item) => {
-//   //   console.log(item.category, item.city, item.date, item.amount, item.status);
-//   // });
-//   return data && data.length ? data.map((bill) => row(bill)).join("") : "";
-// };
 
 const rows = (data) => {
   // Vérifier si 'data' est un tableau et qu'il n'est pas vide avant de continuer
@@ -81,7 +40,6 @@ const rows = (data) => {
   // Afficher/formater les données triées
   return data.map((bill) => row(bill)).join("");
 };
-//console.log(rows);
 
 export default ({ data: bills, loading, error }) => {
   const modal = () => `
@@ -136,3 +94,45 @@ export default ({ data: bills, loading, error }) => {
       ${modal()}
     </div>`;
 };
+
+//--------------------
+//const rows = (data) => {
+//   // Function to convert the date from 'JJ Mois. AAAA' format to 'AAAA/MM/JJ' format
+//   function formatDate(dateString) {
+//     const parts = dateString.split(" ");
+//     const day = parseInt(parts[0], 10);
+//     const monthName = parts[1];
+//     const year = parseInt(parts[2], 10);
+
+//     // Month definitions
+//     const months = [
+//       "Jan.",
+//       "Fév.",
+//       "Mar.",
+//       "Avr.",
+//       "Mai.",
+//       "Juin.",
+//       "Juil.",
+//       "Août",
+//       "Sept.",
+//       "Oct.",
+//       "Nov.",
+//       "Déc.",
+//     ];
+//     const monthIndex = months.findIndex((month) => month === monthName);
+//     const month = (monthIndex + 1).toString().padStart(2, "0"); // Convert to month number (1-12) and pad with leading zero if necessary
+
+//     // Format the date to 'YYYY-MM-DD'
+//     return `${year}-${month}-${day.toString().padStart(2, "0")}`;
+//   }
+
+//   // Sort data by date from most recent to least recent
+//   data.sort((a, b) => {
+//     const dateA = formatDate(a.date);
+//     const dateB = formatDate(b.date);
+//     return dateB.localeCompare(dateA); // Use string comparison for dates in 'AAAA/MM/JJ' format
+//   });
+
+//   // Return processed data, ensuring it's mapped properly
+//   return data && data.length ? data.map((bill) => row(bill)).join("") : "";
+// };
