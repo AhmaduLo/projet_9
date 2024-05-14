@@ -31,18 +31,18 @@ describe("Given I am connected as an employee", () => {
       const windowIcon = screen.getByTestId("icon-window");
       //to-do write expect expression
     });
-    test("Then bills should be ordered from earliest to latest", () => {
+    test("Then bills should be ordered from latest to earliest", () => {
       document.body.innerHTML = BillsUI({ data: bills });
       const datesElements = screen.getAllByText(
         /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
       );
       const dates = datesElements.map((element) => element.innerHTML);
 
-      // Nouvelle logique de tri..
+      // Nouvelle logique de tri pour vérifier l'ordre décroissant
       const datesSorted = [...dates].sort((a, b) => {
         const dateA = new Date(a);
         const dateB = new Date(b);
-        return dateA - dateB;
+        return dateB - dateA; // Inverser l'ordre pour du plus récent au plus ancien
       });
 
       expect(dates).toEqual(datesSorted);
