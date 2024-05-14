@@ -4,13 +4,11 @@ import LoadingPage from "./LoadingPage.js";
 import Actions from "./Actions.js";
 
 const row = (bill) => {
-  //console.log(bill.date);
-
   return `
     <tr>
       <td>${bill.type}</td>
       <td>${bill.name}</td>
-      <td data-date="${bill.date}">${bill.date}</td>
+      <td>${bill.date}</td>
       <td>${bill.amount} €</td>
       <td>${bill.status}</td>
       <td>
@@ -101,10 +99,16 @@ const rows = (data) => {
 //     return dateA - dateB; // Comparer les dates pour le tri, du plus tôt au plus tard
 //   });
 
+<<<<<<< HEAD
 //   // Afficher/formater les données triées
 //   return data.map((bill) => row(bill)).join("");
 // };
 //console.log(rows);
+=======
+  // Afficher/formater les données triées
+  return data.map((bill) => row(bill)).join("");
+};
+>>>>>>> 718c3d9b80583c587a28ef3dae3526e58f86f68f
 
 export default ({ data: bills, loading, error }) => {
   const modal = () => `
@@ -159,3 +163,45 @@ export default ({ data: bills, loading, error }) => {
       ${modal()}
     </div>`;
 };
+
+//--------------------
+//const rows = (data) => {
+//   // Function to convert the date from 'JJ Mois. AAAA' format to 'AAAA/MM/JJ' format
+//   function formatDate(dateString) {
+//     const parts = dateString.split(" ");
+//     const day = parseInt(parts[0], 10);
+//     const monthName = parts[1];
+//     const year = parseInt(parts[2], 10);
+
+//     // Month definitions
+//     const months = [
+//       "Jan.",
+//       "Fév.",
+//       "Mar.",
+//       "Avr.",
+//       "Mai.",
+//       "Juin.",
+//       "Juil.",
+//       "Août",
+//       "Sept.",
+//       "Oct.",
+//       "Nov.",
+//       "Déc.",
+//     ];
+//     const monthIndex = months.findIndex((month) => month === monthName);
+//     const month = (monthIndex + 1).toString().padStart(2, "0"); // Convert to month number (1-12) and pad with leading zero if necessary
+
+//     // Format the date to 'YYYY-MM-DD'
+//     return `${year}-${month}-${day.toString().padStart(2, "0")}`;
+//   }
+
+//   // Sort data by date from most recent to least recent
+//   data.sort((a, b) => {
+//     const dateA = formatDate(a.date);
+//     const dateB = formatDate(b.date);
+//     return dateB.localeCompare(dateA); // Use string comparison for dates in 'AAAA/MM/JJ' format
+//   });
+
+//   // Return processed data, ensuring it's mapped properly
+//   return data && data.length ? data.map((bill) => row(bill)).join("") : "";
+// };
