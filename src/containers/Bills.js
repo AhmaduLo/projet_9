@@ -1,7 +1,7 @@
 import { ROUTES_PATH } from "../constants/routes.js";
 import { formatDate, formatStatus } from "../app/format.js";
 import Logout from "./Logout.js";
-
+import { jsPDF } from "jspdf";
 
 export default class {
   constructor({ document, onNavigate, store, localStorage }) {
@@ -43,13 +43,13 @@ export default class {
       );
     $("#modaleFile").modal("show");
   };
-//----------convertir image en pdf et down-------
+  //----------convertir image en pdf et down-------
   handleClickIconDown = (down) => {
     const billUrl = down.getAttribute("data-bill-url");
     const imgWidth = Math.floor($("#modaleFile").width() * 0.2);
 
     // Création d'une instance jsPDF
-    const { jsPDF } = window.jspdf;
+    //const { jsPDF } = window.jspdf;
     const pdf = new jsPDF();
 
     // Ajout de l'image de la facture au PDF

@@ -16,6 +16,23 @@ export default class NewBill {
     this.fileName = null;
     this.billId = null;
     new Logout({ document, localStorage, onNavigate });
+    //-------------change -------------
+    file.addEventListener("change", () => {
+      const fileInput = this.document.querySelector(
+        `input[data-testid="file"]`
+      );
+      const file = fileInput.files[0];
+      const fileExtension = file.name.split(".").pop().toLowerCase();
+      if (fileExtension === "pdf" || fileExtension === " ") {
+        formNewBill.removeEventListener("submit", this.handleSubmit);
+        alert("vieller choisir un fichier de type png ou jpeg");
+        fileInput.value = "";
+      } else {
+        formNewBill.addEventListener("submit", this.handleSubmit);
+      }
+    });
+    // Ajouter l'écouteur d'événement submit après la vérification du type de fichier
+    formNewBill.addEventListener("submit", this.handleSubmit);
   }
   handleChangeFile = (e) => {
     e.preventDefault();
@@ -74,8 +91,7 @@ export default class NewBill {
     //----modif---
     this.onNavigate(ROUTES_PATH["Bill"]);
 
-    console.log('cva');
-    
+    console.log("cva");
   };
 
   // not need to cover this function by tests
