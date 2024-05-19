@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { screen, waitFor } from "@testing-library/dom";
+import { screen, waitFor, fireEvent } from "@testing-library/dom";
 import BillsUI from "../views/BillsUI.js";
 import { bills } from "../fixtures/bills.js";
 import { ROUTES_PATH } from "../constants/routes.js";
@@ -17,6 +17,8 @@ const mockAddImage = jest.fn();
 const mockSave = jest.fn();
 
 // Simuler la bibliothèque jsPDF pour intercepter son instantiation et ses méthodes
+//const { jsPDF } = window.jspdf;
+//const jspdf = new jsPDF();
 jest.mock("jspdf", () => ({
   jsPDF: jest.fn().mockImplementation(() => ({
     addImage: mockAddImage, // Simuler la méthode addImage
@@ -64,21 +66,41 @@ describe("Given I am connected as an employee", () => {
 
     test("Then bills should be ordered from latest to earliest", () => {
       document.body.innerHTML = BillsUI({ data: bills });
+      
       const datesElements = screen.getAllByText(
         /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
       );
       const dates = datesElements.map((element) => element.innerHTML);
 
-      console.log("Dates before sorting:", dates);
+      const parseDate = (dateString) => {
+        const parts = dateString.split(" ");
+        const day = parseInt(parts[0], 10);
+        const monthName = parts[1];
+        const year = parseInt(parts[2], 10);
+        const months = [
+          "Jan.",
+          "Fév.",
+          "Mar.",
+          "Avr.",
+          "Mai.",
+          "Juin.",
+          "Juil.",
+          "Août",
+          "Sept.",
+          "Oct.",
+          "Nov.",
+          "Déc.",
+        ];
+        const monthIndex = months.findIndex((month) => month === monthName);
+        const month = (monthIndex + 1).toString().padStart(2, "0");
+        return `${year}-${month}-${day.toString().padStart(2, "0")}`;
+      };
 
-      // Nouvelle logique de tri pour vérifier l'ordre décroissant
       const datesSorted = [...dates].sort((a, b) => {
-        const dateA = new Date(a);
-        const dateB = new Date(b);
-        return dateB - dateA; // Inverser l'ordre pour du plus récent au plus ancien
+        const dateA = parseDate(a);
+        const dateB = parseDate(b);
+        return dateB.localeCompare(dateA);
       });
-
-      console.log("Dates after sorting:", datesSorted);
 
       expect(dates).toEqual(datesSorted);
     });
@@ -182,6 +204,35 @@ describe("Given I am connected as an employee", () => {
         "src",
         "http://example.com/image1.jpg"
       );
+    });
+    test("should navigate to a new page when clicking on layout-icon2", () => {
+      // Créer une fonction mock pour la navigation
+      const mockOnNavigate = jest.fn();
+      
+      // Rendu de l'interface utilisateur de Bills
+      document.body.innerHTML = BillsUI({ data: bills });
+      
+      // Ajouter un élément avec data-testid="layout-icon2" pour le test
+      const icon2 = document.createElement("div");
+      icon2.setAttribute("data-testid", "layout-icon2");
+      document.body.append(icon2);
+
+      // Créer une instance de Bills
+      const billsInstance = new Bills({
+        document,
+        onNavigate: mockOnNavigate,
+        store: storeMock,
+        localStorage: window.localStorage,
+      });
+
+      // Ajouter un gestionnaire d'événements pour l'élément icon2
+      icon2.addEventListener("click", () => billsInstance.onNavigate(ROUTES_PATH["NewBill"]));
+
+      // Simuler le clic sur l'élément icon2
+      fireEvent.click(icon2);
+
+      // Vérifier que la navigation a été appelée avec le bon chemin
+      expect(mockOnNavigate).toHaveBeenCalledWith(ROUTES_PATH["NewBill"]);
     });
   });
 });

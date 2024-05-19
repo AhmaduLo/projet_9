@@ -1,10 +1,11 @@
 import { ROUTES_PATH } from "../constants/routes.js";
 import { formatDate, formatStatus } from "../app/format.js";
 import Logout from "./Logout.js";
-import { jsPDF } from "jspdf";
+//import { jsPDF } from "jspdf";
+
 
 export default class {
-  constructor({ document, onNavigate, store, localStorage }) {
+   constructor({ document, onNavigate, store, localStorage }) {
     this.document = document;
     this.onNavigate = onNavigate;
     this.store = store;
@@ -49,7 +50,7 @@ export default class {
     const imgWidth = Math.floor($("#modaleFile").width() * 0.2);
 
     // Création d'une instance jsPDF
-    //const { jsPDF } = window.jspdf;
+    const { jsPDF } = window.jspdf;
     const pdf = new jsPDF();
 
     // Ajout de l'image de la facture au PDF

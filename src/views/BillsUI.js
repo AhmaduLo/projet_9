@@ -19,23 +19,44 @@ const row = (bill) => {
 };
 
 const rows = (data) => {
-  // Fonction pour convertir la date du format JJ/MM/AAAA en objet Date JavaScript
-  function parseDate(dateString) {
-    const parts = dateString.split("-");
-    const year = parseInt(parts[0]);
-    const month = parseInt(parts[1]) - 1; // Les mois en JavaScript sont de 0 à 11
-    const day = parseInt(parts[2]);
-    return new Date(year, month, day);
+  // Function to convert the date from 'JJ Mois. AAAA' format to 'AAAA/MM/JJ' format
+  function formatDate(dateString) {
+    const parts = dateString.split(" ");
+    const day = parseInt(parts[0], 10);
+    const monthName = parts[1];
+    const year = parseInt(parts[2], 10);
+
+    // Month definitions
+    const months = [
+      "Jan.",
+      "Fév.",
+      "Mar.",
+      "Avr.",
+      "Mai.",
+      "Juin.",
+      "Juil.",
+      "Août",
+      "Sept.",
+      "Oct.",
+      "Nov.",
+      "Déc.",
+    ];
+    const monthIndex = months.findIndex((month) => month === monthName);
+    const month = (monthIndex + 1).toString().padStart(2, "0"); // Convert to month number (1-12) and pad with leading zero if necessary
+
+    // Format the date to 'YYYY-MM-DD'
+    return `${year}-${month}-${day.toString().padStart(2, "0")}`;
   }
 
-  // Tri des données par date du plus récent au plus ancien
+  // Sort data by date from most recent to least recent
   data.sort((a, b) => {
-    const dateA = parseDate(a.date);
-    const dateB = parseDate(b.date);
-    return dateB - dateA; // Inverser l'ordre pour du plus récent au plus ancien
+    const dateA = formatDate(a.date);
+    const dateB = formatDate(b.date);
+    return dateB.localeCompare(dateA); // Use string comparison for dates in 'AAAA/MM/JJ' format
   });
-  // Afficher/formater les données triées
-  return data.map((bill) => row(bill)).join("");
+
+  // Return processed data, ensuring it's mapped properly
+  return data && data.length ? data.map((bill) => row(bill)).join("") : "";
 };
 
 export default ({ data: bills, loading, error }) => {
