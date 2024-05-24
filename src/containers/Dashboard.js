@@ -76,7 +76,7 @@ export default class {
     this.document = document;
     this.onNavigate = onNavigate;
     this.store = store;
-    this.counters = {};
+    this.counters = { 1: 0, 2: 0, 3: 0 }; // Compteurs individuels pour chaque liste
     $("#arrow-icon1").click((e) => this.handleShowTickets(e, bills, 1));
     $("#arrow-icon2").click((e) => this.handleShowTickets(e, bills, 2));
     $("#arrow-icon3").click((e) => this.handleShowTickets(e, bills, 3));
@@ -159,21 +159,20 @@ export default class {
   };
 
   handleShowTickets(e, bills, index) {
-    if (!this.counters) this.counters = 0; // Initialisation du compteur pour chaque liste
-
-    if (this.counters % 2 === 0) {
+    if (this.counters[index] === undefined) this.counters[index] = 0;
+    if (this.counters[index] % 2 === 0) {
       $(`#arrow-icon${index}`).css({ transform: "rotate(0deg)" });
       $(`#status-bills-container${index}`).html(
         cards(filteredBills(bills, getStatus(index)))
       );
-      this.counters++;
     } else {
       $(`#arrow-icon${index}`).css({ transform: "rotate(90deg)" });
       $(`#status-bills-container${index}`).html("");
-      this.counters++;
     }
-
-    bills.forEach((bill) => {
+    this.counters[index]++;
+    
+    // Attacher les gestionnaires de clics pour chaque ticket
+    filteredBills(bills, getStatus(index)).forEach((bill) => {
       $(`#open-bill${bill.id}`).click((e) =>
         this.handleEditTicket(e, bill, bills)
       );

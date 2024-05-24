@@ -11,6 +11,7 @@ import Bills from "../containers/Bills.js";
 import userEvent from "@testing-library/user-event";
 import router from "../app/Router.js";
 import "@testing-library/jest-dom/extend-expect";
+//import { jsPDF } from "jspdf";
 
 // Fonctions de simulation (mock) préfixées par `mock` pour plus de clarté
 const mockAddImage = jest.fn();
@@ -40,7 +41,6 @@ jest.mock("jquery", () => {
   originalModule.fn.modal = jest.fn(); // Simuler la fonction modal de jQuery
   return originalModule; // Retourner le module jQuery modifié avec la fonction modal simulée
 });
-
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
     test("Then bill icon in vertical layout should be highlighted", async () => {
@@ -66,7 +66,7 @@ describe("Given I am connected as an employee", () => {
 
     test("Then bills should be ordered from latest to earliest", () => {
       document.body.innerHTML = BillsUI({ data: bills });
-      
+
       const datesElements = screen.getAllByText(
         /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
       );
@@ -208,10 +208,10 @@ describe("Given I am connected as an employee", () => {
     test("should navigate to a new page when clicking on layout-icon2", () => {
       // Créer une fonction mock pour la navigation
       const mockOnNavigate = jest.fn();
-      
+
       // Rendu de l'interface utilisateur de Bills
       document.body.innerHTML = BillsUI({ data: bills });
-      
+
       // Ajouter un élément avec data-testid="layout-icon2" pour le test
       const icon2 = document.createElement("div");
       icon2.setAttribute("data-testid", "layout-icon2");
@@ -226,7 +226,9 @@ describe("Given I am connected as an employee", () => {
       });
 
       // Ajouter un gestionnaire d'événements pour l'élément icon2
-      icon2.addEventListener("click", () => billsInstance.onNavigate(ROUTES_PATH["NewBill"]));
+      icon2.addEventListener("click", () =>
+        billsInstance.onNavigate(ROUTES_PATH["NewBill"])
+      );
 
       // Simuler le clic sur l'élément icon2
       fireEvent.click(icon2);
