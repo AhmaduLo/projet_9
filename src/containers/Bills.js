@@ -3,9 +3,8 @@ import { formatDate, formatStatus } from "../app/format.js";
 import Logout from "./Logout.js";
 //import { jsPDF } from "jspdf";
 
-
 export default class {
-   constructor({ document, onNavigate, store, localStorage }) {
+  constructor({ document, onNavigate, store, localStorage }) {
     this.document = document;
     this.onNavigate = onNavigate;
     this.store = store;
@@ -61,6 +60,15 @@ export default class {
   };
 
   getBills = () => {
+    const formatDate = (dateString) => {
+      const date = new Date(dateString); // Conversion de la chaîne de date en objet Date
+      const options = { day: "2-digit", month: "short" }; // Options pour obtenir le jour et le mois en format abrégé
+      const dayAndMonth = date.toLocaleDateString("fr-FR", options); // Formater le jour et le mois
+      const year = String(date.getFullYear()).slice(-2); // Obtenir les deux derniers chiffres de l'année
+      // Supprimer les points additionnels après le mois
+      return `${dayAndMonth.replace(/\.$/, "")}. ${year}`;
+    };
+
     if (this.store) {
       return this.store
         .bills()
@@ -70,22 +78,28 @@ export default class {
             try {
               return {
                 ...doc,
+                // Parse date as Date object here for sorting purposes
+                parsedDate: new Date(doc.date),
                 date: formatDate(doc.date),
                 status: formatStatus(doc.status),
               };
             } catch (e) {
-              // if for some reason, corrupted data was introduced, we manage here failing formatDate function
-              // log the error and return unformatted date in that case
+              // Handle corrupted data by logging the error and returning unformatted date
               console.log(e, "for", doc);
               return {
                 ...doc,
+                parsedDate: new Date(doc.date),
                 date: doc.date,
                 status: formatStatus(doc.status),
               };
             }
           });
-          // console.log('length', bills.length)
-          return bills;
+
+          // Trier les factures du plus récent au plus ancien en utilisant parsedDate
+          bills.sort((a, b) => b.parsedDate - a.parsedDate);
+
+          // Supprimer parsedDate du résultat final avant de retourner les factures
+          return bills.map(({ parsedDate, ...rest }) => rest);
         });
     }
   };

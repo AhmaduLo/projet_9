@@ -11,6 +11,7 @@ import Bills from "../containers/Bills.js";
 import userEvent from "@testing-library/user-event";
 import router from "../app/Router.js";
 import "@testing-library/jest-dom/extend-expect";
+import { formatDate, formatStatus } from "../app/format.js";
 //import { jsPDF } from "jspdf";
 
 // Fonctions de simulation (mock) préfixées par `mock` pour plus de clarté
@@ -63,48 +64,17 @@ describe("Given I am connected as an employee", () => {
       //to-do write expect expression
       expect(windowIcon.classList.contains("active-icon")).toBeTruthy();
     });
-
-    test("Then bills should be ordered from latest to earliest", () => {
+    test("Then bills should be ordered from earliest to latest", () => {
       document.body.innerHTML = BillsUI({ data: bills });
-
-      const datesElements = screen.getAllByText(
-        /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
-      );
-      const dates = datesElements.map((element) => element.innerHTML);
-
-      const parseDate = (dateString) => {
-        const parts = dateString.split(" ");
-        const day = parseInt(parts[0], 10);
-        const monthName = parts[1];
-        const year = parseInt(parts[2], 10);
-        const months = [
-          "Jan.",
-          "Fév.",
-          "Mar.",
-          "Avr.",
-          "Mai.",
-          "Juin.",
-          "Juil.",
-          "Août",
-          "Sept.",
-          "Oct.",
-          "Nov.",
-          "Déc.",
-        ];
-        const monthIndex = months.findIndex((month) => month === monthName);
-        const month = (monthIndex + 1).toString().padStart(2, "0");
-        return `${year}-${month}-${day.toString().padStart(2, "0")}`;
-      };
-
-      const datesSorted = [...dates].sort((a, b) => {
-        const dateA = parseDate(a);
-        const dateB = parseDate(b);
-        return dateB.localeCompare(dateA);
-      });
-
+      const dates = screen
+        .getAllByText(
+          /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
+        )
+        .map((a) => a.innerHTML);
+      const antiChrono = (a, b) => (a < b ? 1 : -1);
+      const datesSorted = [...dates].sort(antiChrono);
       expect(dates).toEqual(datesSorted);
     });
-
     test("When 'New bill' is clicked, handleClickNewBill should navigate", () => {
       // Test pour vérifier que le clic sur 'Nouvelle facture' navigue vers la page correcte
 
@@ -133,7 +103,6 @@ describe("Given I am connected as an employee", () => {
       // Vérification que la fonction mock de navigation a été appelée avec le bon chemin de route
       expect(onNavigateMock).toHaveBeenCalledWith(ROUTES_PATH["NewBill"]);
     });
-
     test("When clicking on the download icon, it should generate and download Facture.pdf", () => {
       // Configuration des données fictives pour une facture
       const billsData = [{ id: "1", fileUrl: "http://example.com/image1.jpg" }];
@@ -235,6 +204,37 @@ describe("Given I am connected as an employee", () => {
 
       // Vérifier que la navigation a été appelée avec le bon chemin
       expect(mockOnNavigate).toHaveBeenCalledWith(ROUTES_PATH["NewBill"]);
+    });
+
+    test("When getting bills, it should fetch bills from the mock API and format the data", async () => {
+      const storeMock = {
+        bills: jest.fn().mockImplementation(() => {
+          return {
+            list: jest.fn().mockResolvedValue([
+              { id: "1", date: "2021-01-01", status: "pending" },
+              { id: "2", date: "2021-02-01", status: "accepted" },
+            ]),
+          };
+        }),
+      };
+
+      const billsInstance = new Bills({
+        document,
+        onNavigate: jest.fn(), // Fonction fictive pour la navigation
+        store: storeMock,
+        localStorage: window.localStorage,
+      });
+
+      const bills = await billsInstance.getBills();
+
+      expect(storeMock.bills).toHaveBeenCalled();
+
+      const expectedBills = [
+        { id: "2", date: "01 févr. 21", status: formatStatus("accepted") },
+        { id: "1", date: "01 janv. 21", status: formatStatus("pending") },
+      ];
+
+      expect(bills).toEqual(expectedBills);
     });
   });
 });
