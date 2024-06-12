@@ -23,12 +23,11 @@ export default class NewBill {
       );
       const file = fileInput.files[0];
       const fileExtension = file.name.split(".").pop().toLowerCase();
-      if (fileExtension === "pdf" || fileExtension === " ") {
-        formNewBill.removeEventListener("submit", this.handleSubmit);
+      if (fileExtension === "jpg" || fileExtension === "png") {
+        formNewBill.addEventListener("submit", this.handleSubmit);
+      } else {
         alert("vieller choisir un fichier de type png ou jpeg");
         fileInput.value = "";
-      } else {
-        formNewBill.addEventListener("submit", this.handleSubmit);
       }
     });
     // Ajouter l'écouteur d'événement submit après la vérification du type de fichier
@@ -93,7 +92,7 @@ export default class NewBill {
 
     console.log("cva");
   };
-
+ 
   // not need to cover this function by tests
   updateBill = (bill) => {
     if (this.store) {
