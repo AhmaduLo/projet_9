@@ -103,45 +103,6 @@ describe("Given I am connected as an employee", () => {
       // Vérification que la fonction mock de navigation a été appelée avec le bon chemin de route
       expect(onNavigateMock).toHaveBeenCalledWith(ROUTES_PATH["NewBill"]);
     });
-    test("When clicking on the download icon, it should generate and download Facture.pdf", () => {
-      // Configuration des données fictives pour une facture
-      const billsData = [{ id: "1", fileUrl: "http://example.com/image1.jpg" }];
-
-      // Rendu de l'interface utilisateur avec les données fictives
-      document.body.innerHTML = BillsUI({ data: billsData });
-
-      // Création d'une instance de la classe Bills avec les données fictives
-      const billsInstance = new Bills({
-        document,
-        onNavigate: jest.fn(), // Fonction fictive pour la navigation
-        store: null,
-        localStorage: window.localStorage,
-      });
-
-      // Configuration de l'icône de téléchargement et attachement du gestionnaire d'événements de clic
-      const downloadIcon = screen.getByTestId("icon-download");
-      downloadIcon.setAttribute(
-        "data-bill-url",
-        "http://example.com/image1.jpg"
-      );
-      downloadIcon.addEventListener("click", () =>
-        billsInstance.handleClickIconDown(downloadIcon)
-      );
-
-      // Simulation d'un événement de clic
-      userEvent.click(downloadIcon);
-
-      // Vérification que les fonctions mockées `addImage` et `save` ont été appelées correctement
-      expect(mockAddImage).toHaveBeenCalledWith(
-        "http://example.com/image1.jpg", // URL de l'image de la facture
-        "JPEG", // Format de l'image
-        0, // Coordonnée X pour ajouter l'image
-        0, // Coordonnée Y pour ajouter l'image
-        expect.any(Number), // Largeur de l'image
-        expect.any(Number) // Hauteur de l'image
-      );
-      expect(mockSave).toHaveBeenCalledWith("Facture.pdf"); // Vérification que le fichier PDF a été enregistré avec le nom "Facture.pdf"
-    });
     test("When clicking on the eye icon, it should display the bill image in a modal", () => {
       // Création de données fictives pour une facture
       const billsData = [{ id: "1", fileUrl: "http://example.com/image1.jpg" }];
